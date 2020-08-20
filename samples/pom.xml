@@ -45,6 +45,7 @@
         <module>spring-hibernate</module>
         <module>spring-boot</module>
         <module>spring-boot-web</module>
+        <module>spring-boot-coffee</module>
         <module>guice</module>
         <module>quickstart-guice</module>
         <module>servlet-plugin</module>
