@@ -4,9 +4,9 @@
 [![Build Status](https://ci-builds.apache.org/job/Shiro/job/Shiro-jdk8/job/master/badge/icon)](https://ci-builds.apache.org/job/Shiro/job/Shiro-jdk8/job/master/)
 [![Jenkins tests](https://img.shields.io/jenkins/tests/https/builds.apache.org/view/S-Z/view/Shiro/job/Shiro-master.svg?compact_message)](https://builds.apache.org/view/S-Z/view/Shiro/job/Shiro-master/test_results_analyzer/)
 
-Apache Shiro
+Apache Shiro Coffee Edition
 ============
-Coffee Edition (功能自定义和学习分享版)
+Function customization and learning sharing version
 
 [Apache Shiro](http://shiro.apache.org) is a powerful and easy-to-use Java security framework that performs authentication, authorization, cryptography, and session management. With Shiro’s easy-to-understand API, you can quickly and easily secure any application – from the smallest mobile applications to the largest web and enterprise applications.
 
