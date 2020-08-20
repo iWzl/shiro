@@ -436,8 +436,10 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      */
     private Cache<Object, AuthenticationInfo> getAvailableAuthenticationCache() {
         Cache<Object, AuthenticationInfo> cache = getAuthenticationCache();
+        // 判断认证信息的Cache是否开启切可可用
         boolean authcCachingEnabled = isAuthenticationCachingEnabled();
         if (cache == null && authcCachingEnabled) {
+            // 开启缓存但是没有加载，调用懒Cache加载逻辑
             cache = getAuthenticationCacheLazy();
         }
         return cache;
@@ -457,11 +459,13 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
 
             log.trace("No authenticationCache instance set.  Checking for a cacheManager...");
 
+            // 获取缓存管理器
             CacheManager cacheManager = getCacheManager();
 
             if (cacheManager != null) {
                 String cacheName = getAuthenticationCacheName();
                 log.debug("CacheManager [{}] configured.  Building authentication cache '{}'", cacheManager, cacheName);
+                // 获取缓存Cache通过CacheName
                 this.authenticationCache = cacheManager.getCache(cacheName);
             }
         }
@@ -480,10 +484,11 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      */
     private AuthenticationInfo getCachedAuthenticationInfo(AuthenticationToken token) {
         AuthenticationInfo info = null;
-
+        // 获取可用的认证缓存Cache信息
         Cache<Object, AuthenticationInfo> cache = getAvailableAuthenticationCache();
         if (cache != null && token != null) {
             log.trace("Attempting to retrieve the AuthenticationInfo from cache.");
+            // 通过Token获取缓存的认证信息
             Object key = getAuthenticationCacheKey(token);
             info = cache.get(key);
             if (info == null) {
@@ -564,13 +569,15 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      * @throws AuthenticationException if authentication failed.
      */
     public final AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-
+        // 从缓存中获取认证信息
         AuthenticationInfo info = getCachedAuthenticationInfo(token);
         if (info == null) {
             //otherwise not cached, perform the lookup:
+            // 根据Token授权缓存认证信息
             info = doGetAuthenticationInfo(token);
             log.debug("Looked up AuthenticationInfo [{}] from doGetAuthenticationInfo", info);
             if (token != null && info != null) {
+                // 尝试缓存用户的认证信息，通过Token和用户信息
                 cacheAuthenticationInfoIfPossible(token, info);
             }
         } else {
@@ -578,6 +585,7 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
         }
 
         if (info != null) {
+            // 比对断言Token和认证信息的一致性
             assertCredentialsMatch(token, info);
         } else {
             log.debug("No AuthenticationInfo found for submitted AuthenticationToken [{}].  Returning null.", token);
@@ -595,8 +603,10 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      * @throws AuthenticationException if the token's credentials do not match the stored account credentials.
      */
     protected void assertCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) throws AuthenticationException {
+        // 获取Token的比较管理器
         CredentialsMatcher cm = getCredentialsMatcher();
         if (cm != null) {
+            // 执行校验比较
             if (!cm.doCredentialsMatch(token, info)) {
                 //not successful - throw an exception to indicate this:
                 String msg = "Submitted credentials for token [" + token + "] did not match the expected credentials.";

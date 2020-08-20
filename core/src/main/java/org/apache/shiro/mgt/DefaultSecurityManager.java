@@ -227,9 +227,11 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
     }
 
     protected void rememberMeFailedLogin(AuthenticationToken token, AuthenticationException ex, Subject subject) {
+        // 获取RememberMe管理器
         RememberMeManager rmm = getRememberMeManager();
         if (rmm != null) {
             try {
+                // 执行清除操作(eg:擦除Cookie)
                 rmm.onFailedLogin(subject, token, ex);
             } catch (Exception e) {
                 if (log.isWarnEnabled()) {
@@ -272,8 +274,10 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
     public Subject login(Subject subject, AuthenticationToken token) throws AuthenticationException {
         AuthenticationInfo info;
         try {
+            // 对Token进行认证，返回认证信息
             info = authenticate(token);
         } catch (AuthenticationException ae) {
+            // 用户凭证信息比对失败的处理
             try {
                 onFailedLogin(token, ae, subject);
             } catch (Exception e) {
@@ -282,11 +286,13 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
                             "exception.  Logging and propagating original AuthenticationException.", e);
                 }
             }
+            // 向上抛出身份验证异常
             throw ae; //propagate
         }
 
+        // 创建已经登录成功的话题对象
         Subject loggedIn = createSubject(token, info, subject);
-
+        // 执行用户凭证信息比对成功的处理(RememberMe)
         onSuccessfulLogin(token, info, loggedIn);
 
         return loggedIn;

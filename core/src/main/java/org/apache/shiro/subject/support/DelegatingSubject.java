@@ -257,7 +257,9 @@ public class DelegatingSubject implements Subject {
     }
 
     public void login(AuthenticationToken token) throws AuthenticationException {
+        // 清理之前存在的信息历史记录，反正缓存和其他一些原因导致的误判可能
         clearRunAsIdentitiesInternal();
+        // 调用安全管理器，执行实际的登录操作
         Subject subject = securityManager.login(this, token);
 
         PrincipalCollection principals;
@@ -355,6 +357,7 @@ public class DelegatingSubject implements Subject {
     private void clearRunAsIdentitiesInternal() {
         //try/catch added for SHIRO-298
         try {
+            // 清理运行时用户的身份
             clearRunAsIdentities();
         } catch (SessionException se) {
             log.debug("Encountered session exception trying to clear 'runAs' identities during logout.  This " +
@@ -477,8 +480,10 @@ public class DelegatingSubject implements Subject {
     }
 
     private void clearRunAsIdentities() {
+        // 获取当前的用户会话,不进行会话创建
         Session session = getSession(false);
         if (session != null) {
+            // 发现会话时,清除这一次的会话
             session.removeAttribute(RUN_AS_PRINCIPALS_SESSION_KEY);
         }
     }

@@ -171,12 +171,14 @@ public class ModularRealmAuthenticator extends AbstractAuthenticator {
      * @return the AuthenticationInfo associated with the user account corresponding to the specified {@code token}
      */
     protected AuthenticationInfo doSingleRealmAuthentication(Realm realm, AuthenticationToken token) {
+        // 校验这个Realm是否支持这个凭证密钥
         if (!realm.supports(token)) {
             String msg = "Realm [" + realm + "] does not support authentication token [" +
                     token + "].  Please ensure that the appropriate Realm implementation is " +
                     "configured correctly or that the realm accepts AuthenticationTokens of this type.";
             throw new UnsupportedTokenException(msg);
         }
+        // 通过凭证，获取用户的认证信息
         AuthenticationInfo info = realm.getAuthenticationInfo(token);
         if (info == null) {
             String msg = "Realm [" + realm + "] was unable to find account data for the " +
@@ -267,11 +269,14 @@ public class ModularRealmAuthenticator extends AbstractAuthenticator {
      *                                 for the given principal and credentials.
      */
     protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
+        // 校验判断Realm配置是否存在(getRealms()不为空)
         assertRealmsConfigured();
         Collection<Realm> realms = getRealms();
         if (realms.size() == 1) {
+            // 场上存在一个用户认证审核域
             return doSingleRealmAuthentication(realms.iterator().next(), authenticationToken);
         } else {
+            // 场上存在多个用户认证审核域
             return doMultiRealmAuthentication(realms, authenticationToken);
         }
     }
